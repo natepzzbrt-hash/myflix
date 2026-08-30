@@ -37,10 +37,13 @@ body{background:#0a0a0a;color:#fff;font-family:'Segoe UI',Arial,sans-serif;min-h
 .section .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px}
 .section .head h2{font-size:20px;font-weight:700;margin:0;color:#fff}
 .section .head .link{color:#aaa;font-size:14px;cursor:pointer}.section .head .link:hover{color:#fff}
+.section .head .search-input{background:#1a1a1a;border:1px solid #444;border-radius:30px;padding:6px 16px;color:#fff;font-size:14px;outline:none;flex:1;max-width:350px}
+.section .head .search-input:focus{border-color:#e50914}
 .row{display:flex;gap:12px;overflow-x:auto;padding:10px 0 20px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.row::-webkit-scrollbar{display:none}
-.card{flex:0 0 180px;border-radius:8px;overflow:hidden;background:#151515;transition:transform .3s,box-shadow .3s;cursor:pointer;position:relative}
+.row-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;padding:10px 0}
+.card{position:relative;border-radius:8px;overflow:hidden;background:#151515;transition:transform .3s,box-shadow .3s;cursor:pointer}
 .card:hover{transform:scale(1.04);z-index:10;box-shadow:0 20px 50px rgba(0,0,0,.9)}
-.card .poster{width:100%;aspect-ratio:2/3;object-fit:cover;background:#1a1a1a}
+.card .poster{width:100%;aspect-ratio:2/3;object-fit:cover;background:#1a1a1a;display:block}
 .card .info{position:absolute;bottom:0;left:0;right:0;padding:12px 10px;background:linear-gradient(to top,rgba(0,0,0,.95),transparent);opacity:0;transition:opacity .25s}
 .card:hover .info{opacity:1}
 .card .info .title{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -96,6 +99,8 @@ body{background:#0a0a0a;color:#fff;font-family:'Segoe UI',Arial,sans-serif;min-h
  .modal .box .media{height:250px}
  .modal .box .content{padding:15px}
  .modal .box .content h2{font-size:24px}
+ .row-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+ .section .head .search-input{max-width:100%}
 }
 </style>
 </head>
@@ -109,6 +114,7 @@ body{background:#0a0a0a;color:#fff;font-family:'Segoe UI',Arial,sans-serif;min-h
         <span data-tab="movies">Movies</span>
         <span data-tab="shows">Shows</span>
         <span data-tab="mylist">My List</span>
+        <span data-tab="search">Search</span>
         <span data-tab="settings" onclick="openSettings()">Settings</span>
     </div>
     <div class="right">
@@ -126,6 +132,8 @@ body{background:#0a0a0a;color:#fff;font-family:'Segoe UI',Arial,sans-serif;min-h
 <!-- ===== MAIN ===== -->
 <div class="main-content" id="mainContent">
     <div class="error-msg" id="errorDisplay"></div>
+
+    <!-- Hero -->
     <div class="hero" id="heroSection">
         <img id="heroImage" src="" alt="">
         <div class="overlay">
@@ -143,30 +151,50 @@ body{background:#0a0a0a;color:#fff;font-family:'Segoe UI',Arial,sans-serif;min-h
             </div>
         </div>
     </div>
+
+    <!-- Continue Watching -->
     <div class="section" id="continueSection" style="display:none">
         <div class="head"><h2>▶ Continue Watching</h2></div>
         <div class="row" id="continueRow"></div>
     </div>
+
+    <!-- Recommended -->
     <div class="section" id="recommendedSection">
         <div class="head"><h2 id="recommendedTitle">✨ Recommended For You</h2></div>
         <div class="row" id="recommendedRow"></div>
     </div>
+
+    <!-- Movies -->
     <div class="section" id="moviesSection">
         <div class="head"><h2>🎬 Popular Movies</h2><span class="link" onclick="loadTab('movies')">View All →</span></div>
         <div class="row" id="moviesRow"></div>
     </div>
+
+    <!-- TV Shows -->
     <div class="section" id="tvSection">
         <div class="head"><h2>📺 Popular TV Shows</h2><span class="link" onclick="loadTab('shows')">View All →</span></div>
         <div class="row" id="tvRow"></div>
     </div>
+
+    <!-- Top 10 -->
     <div class="section" id="topSection">
         <div class="head"><h2>🔥 Top 10 Today</h2></div>
         <div class="row" id="topRow"></div>
     </div>
+
+    <!-- Search Tab Section -->
+    <div class="section" id="searchSection" style="display:none;">
+        <div class="head">
+            <h2 id="searchSectionTitle">🔍 Search Movies & Shows</h2>
+            <input id="searchSectionInput" class="search-input" type="text" placeholder="Type to filter...">
+        </div>
+        <div id="searchGrid" class="row-grid"></div>
+    </div>
+
     <div id="loadingSpinner" class="spinner"></div>
 </div>
 
-<!-- ===== DETAIL MODAL (YouTube trailer) ===== -->
+<!-- ===== DETAIL MODAL ===== -->
 <div class="modal" id="detailModal">
     <div class="box">
         <button class="close" onclick="closeDetail()">×</button>
@@ -247,6 +275,7 @@ let currentTheme = localStorage.getItem('myflixTheme') || 'dark';
 let myList = JSON.parse(localStorage.getItem('myflixList') || '[]');
 let history = JSON.parse(localStorage.getItem('myflixHistory') || '[]');
 let progress = JSON.parse(localStorage.getItem('myflixProgress') || '{}');
+let allSearchResults = []; // for search tab filtering
 
 // DOM refs
 const errorDisplay = document.getElementById('errorDisplay');
@@ -265,6 +294,10 @@ const recommendedTitle = document.getElementById('recommendedTitle');
 const moviesRow = document.getElementById('moviesRow');
 const tvRow = document.getElementById('tvRow');
 const topRow = document.getElementById('topRow');
+const searchSection = document.getElementById('searchSection');
+const searchGrid = document.getElementById('searchGrid');
+const searchSectionInput = document.getElementById('searchSectionInput');
+const searchSectionTitle = document.getElementById('searchSectionTitle');
 const loadingSpinner = document.getElementById('loadingSpinner');
 const searchInput = document.getElementById('searchInput');
 const modalPoster = document.getElementById('modalPoster');
@@ -311,9 +344,9 @@ function getYear(item, type) { const d = type === 'tv' ? item.first_air_date : i
 function escapeHTML(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
 
 // ============================================================
-// CARD CREATOR
+// CARD CREATOR (with grid option)
 // ============================================================
-function createCard(item, type, small = false) {
+function createCard(item, type, small = false, grid = false) {
     if (!item || !item.id || !item.poster_path) return null;
     const title = getTitle(item, type);
     const year = getYear(item, type);
@@ -324,7 +357,7 @@ function createCard(item, type, small = false) {
     const inMyList = myList.some(i => i.id === item.id && i.type === type);
     const card = document.createElement('div');
     card.className = 'card';
-    if (small) card.style.flex = '0 0 110px';
+    if (grid) card.style.width = '100%';
     card.innerHTML = `
         <img class="poster" src="${POSTER + item.poster_path}" alt="${escapeHTML(title)}" loading="lazy">
         <div class="badge">${type === 'tv' ? 'TV' : 'MOVIE'}</div>
@@ -362,10 +395,12 @@ function displayRow(container, items, type) {
     valid.forEach(item => { const card = createCard(item, type); if (card) container.appendChild(card); });
 }
 
-function appendMixed(container, items) {
-    (items||[]).forEach(item => {
-        if (!item.poster_path || (item.media_type !== 'movie' && item.media_type !== 'tv')) return;
-        const card = createCard(item, item.media_type);
+function displayGrid(container, items) {
+    container.innerHTML = '';
+    const valid = (items||[]).filter(i => i && i.poster_path && (i.media_type==='movie'||i.media_type==='tv'));
+    if (!valid.length) { container.innerHTML = `<div style="color:#777;padding:20px;text-align:center;">No results found.</div>`; return; }
+    valid.forEach(item => {
+        const card = createCard(item, item.media_type, false, true);
         if (card) container.appendChild(card);
     });
 }
@@ -444,14 +479,44 @@ async function loadMyList() {
 }
 
 // ============================================================
+// SEARCH TAB
+// ============================================================
+async function loadSearchTab(query = '') {
+    searchSectionTitle.textContent = query ? `🔍 Results for "${escapeHTML(query)}"` : '🔍 Search Movies & Shows';
+    searchGrid.innerHTML = '<div class="spinner" style="margin:20px auto;"></div>';
+    try {
+        let items = [];
+        if (query) {
+            const data = await api('/search/multi?language=en-US&include_adult=false&page=1&query=' + encodeURIComponent(query));
+            items = (data.results||[]).filter(i => (i.media_type==='movie'||i.media_type==='tv') && i.poster_path);
+        } else {
+            // Load popular movies and shows for initial view
+            const [movies, shows] = await Promise.all([
+                api('/movie/popular?language=en-US&page=1'),
+                api('/tv/popular?language=en-US&page=1')
+            ]);
+            const movieItems = (movies.results||[]).map(m => ({...m, media_type:'movie'}));
+            const showItems = (shows.results||[]).map(s => ({...s, media_type:'tv'}));
+            items = [...movieItems, ...showItems];
+        }
+        allSearchResults = items;
+        displayGrid(searchGrid, items);
+    } catch(e) {
+        searchGrid.innerHTML = '<div style="color:#777;padding:20px;text-align:center;">Search failed. Please try again.</div>';
+        showError('Search tab: ' + e.message);
+    }
+}
+
+// ============================================================
 // TAB NAVIGATION
 // ============================================================
 function loadTab(tab) {
     currentTab = tab;
     document.querySelectorAll('.nav-links span').forEach(el => el.classList.toggle('active', el.dataset.tab === tab));
-    const sections = ['continueSection', 'recommendedSection', 'moviesSection', 'tvSection', 'topSection'];
+    const sections = ['continueSection', 'recommendedSection', 'moviesSection', 'tvSection', 'topSection', 'searchSection'];
     if (tab === 'home') {
         sections.forEach(id => document.getElementById(id).style.display = '');
+        document.getElementById('searchSection').style.display = 'none';
         loadContinueWatching();
         document.getElementById('moviesSection').style.display = '';
         document.getElementById('tvSection').style.display = '';
@@ -481,11 +546,20 @@ function loadTab(tab) {
         document.querySelector('#moviesSection .head h2').textContent = '❤️ My List';
         document.querySelector('#moviesSection .head .link').style.display = 'none';
         loadMyList();
+    } else if (tab === 'search') {
+        sections.forEach(id => document.getElementById(id).style.display = 'none');
+        document.getElementById('searchSection').style.display = '';
+        // Load search tab with current query if any
+        const q = searchInput.value.trim();
+        loadSearchTab(q);
+        // Also set the section input to match
+        searchSectionInput.value = q;
     } else if (tab === 'settings') {
         openSettings();
     }
 }
 
+// Nav clicks
 document.querySelectorAll('.nav-links span').forEach(el => {
     el.addEventListener('click', function() {
         const tab = this.dataset.tab;
@@ -496,16 +570,61 @@ document.querySelectorAll('.nav-links span').forEach(el => {
 });
 
 // ============================================================
-// DETAILS MODAL – YouTube Trailers
+// SEARCH SECTION INPUT (filter within search tab)
+// ============================================================
+searchSectionInput.addEventListener('input', function() {
+    const query = this.value.trim();
+    // Update the main search input too for sync
+    searchInput.value = query;
+    if (query) {
+        loadSearchTab(query);
+    } else {
+        loadSearchTab(); // load default popular
+    }
+});
+
+// ============================================================
+// GLOBAL SEARCH INPUT (top bar)
+// ============================================================
+searchInput.addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    const q = this.value.trim();
+    // Sync with section input
+    searchSectionInput.value = q;
+    if (!q) {
+        // If on search tab, show default; else just reset
+        if (currentTab === 'search') {
+            loadSearchTab();
+        }
+        return;
+    }
+    searchTimeout = setTimeout(() => {
+        // If not on search tab, switch to it
+        if (currentTab !== 'search') {
+            loadTab('search');
+        } else {
+            loadSearchTab(q);
+        }
+    }, 400);
+});
+
+// Also handle Enter key on main search to immediately go to search tab
+searchInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && this.value.trim()) {
+        if (currentTab !== 'search') loadTab('search');
+        else loadSearchTab(this.value.trim());
+    }
+});
+
+// ============================================================
+// DETAILS MODAL
 // ============================================================
 async function showDetails(item, type) {
     selectedItem = { ...item, media_type: type };
     const modal = document.getElementById('detailModal');
-    // Poster
     if (item.backdrop_path) modalPoster.src = BACKDROP + item.backdrop_path;
     else if (item.poster_path) modalPoster.src = POSTER + item.poster_path;
     modalPoster.classList.remove('hidden');
-    // Trailer iframe – start empty
     modalTrailer.src = '';
     modalTrailer.classList.remove('active');
     document.getElementById('modalTitle').textContent = getTitle(item, type);
@@ -520,19 +639,13 @@ async function showDetails(item, type) {
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
 
-    // Fetch and load YouTube trailer
     const video = await getTrailer(item.id, type);
     if (video) {
         modalTrailer.src = 'https://www.youtube.com/embed/' + encodeURIComponent(video.key) + '?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1&playsinline=1';
         modalTrailer.onload = () => { modalTrailer.classList.add('active'); modalPoster.classList.add('hidden'); };
-        // Fallback: if onload doesn't fire, show after 2 seconds
         setTimeout(() => { modalTrailer.classList.add('active'); modalPoster.classList.add('hidden'); }, 2000);
-    } else {
-        // No trailer, just show poster
-        modalPoster.classList.remove('hidden');
     }
 
-    // Similar
     const similarRow = document.getElementById('similarRow');
     similarRow.innerHTML = '<div style="color:#777;padding:10px;">Loading...</div>';
     try {
@@ -553,6 +666,15 @@ async function getTrailer(id, type) {
                videos.find(v => v.site==='YouTube' && v.type==='Trailer') ||
                videos.find(v => v.site==='YouTube' && v.type==='Teaser') || null;
     } catch(e) { return null; }
+}
+
+function closeDetail() {
+    document.getElementById('detailModal').classList.remove('active');
+    modalTrailer.src = '';
+    modalTrailer.classList.remove('active');
+    modalPoster.classList.remove('hidden');
+    selectedItem = null;
+    document.body.style.overflow = '';
 }
 
 // ============================================================
@@ -646,18 +768,6 @@ function closePlayer() {
 }
 
 // ============================================================
-// CLOSE DETAIL
-// ============================================================
-function closeDetail() {
-    document.getElementById('detailModal').classList.remove('active');
-    modalTrailer.src = '';
-    modalTrailer.classList.remove('active');
-    modalPoster.classList.remove('hidden');
-    selectedItem = null;
-    document.body.style.overflow = '';
-}
-
-// ============================================================
 // SETTINGS
 // ============================================================
 function openSettings() {
@@ -690,35 +800,6 @@ document.querySelectorAll('#themeOptions button').forEach(btn => {
         setTheme(this.dataset.theme);
     });
 });
-
-// ============================================================
-// SEARCH
-// ============================================================
-searchInput.addEventListener('input', function() {
-    clearTimeout(searchTimeout);
-    const q = this.value.trim();
-    if (!q) {
-        recommendedTitle.textContent = '✨ Recommended For You';
-        loadRecommendations();
-        return;
-    }
-    searchTimeout = setTimeout(() => performSearch(q), 400);
-});
-
-async function performSearch(query) {
-    recommendedTitle.textContent = '🔍 Results for "' + escapeHTML(query) + '"';
-    try {
-        const data = await api('/search/multi?language=en-US&include_adult=false&page=1&query=' + encodeURIComponent(query));
-        const results = (data.results||[]).filter(i => (i.media_type==='movie'||i.media_type==='tv') && i.poster_path);
-        recommendedRow.innerHTML = '';
-        if (!results.length) { recommendedRow.innerHTML = '<div style="color:#777;padding:10px;">No results found.</div>'; }
-        else { results.forEach(item => { const card = createCard(item, item.media_type); if (card) recommendedRow.appendChild(card); }); }
-        document.getElementById('recommendedSection').scrollIntoView({behavior:'smooth'});
-    } catch(e) {
-        showError('Search failed: ' + e.message);
-        recommendedRow.innerHTML = '<div style="color:#777;padding:10px;">Search error. Please try again.</div>';
-    }
-}
 
 // ============================================================
 // INIT
