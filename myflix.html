@@ -1,0 +1,4161 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><style>*{box-sizing:border-box}</style></head><body><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050505">
+
+<title>MYFLIX</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background: #050505;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    overflow-x: hidden;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+img {
+    display: block;
+}
+
+::-webkit-scrollbar {
+    width: 7px;
+}
+
+::-webkit-scrollbar-track {
+    background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 20px;
+}
+
+:root {
+    --red: #e50914;
+    --dark: #050505;
+}
+
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 68px;
+
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 4vw;
+
+    transition: .3s ease;
+}
+
+.navbar.scrolled {
+    background: rgba(5,5,5,.96);
+    backdrop-filter: blur(15px);
+}
+
+.logo {
+    color: var(--red);
+    font-size: 28px;
+    font-weight: 950;
+    letter-spacing: -2px;
+    cursor: pointer;
+}
+
+.nav-links {
+    display: flex;
+    gap: 25px;
+    margin-left: 40px;
+    color: #ccc;
+    font-size: 14px;
+}
+
+.nav-links span {
+    cursor: pointer;
+}
+
+.nav-links span:hover {
+    color: white;
+}
+
+.nav-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    z-index: 2;
+    cursor: pointer;
+}
+
+.search {
+    width: 0;
+    opacity: 0;
+
+    color: white;
+    background: rgba(0,0,0,.8);
+
+    border: 1px solid transparent;
+    border-radius: 5px;
+
+    outline: none;
+
+    padding: 9px 10px 9px 34px;
+
+    transition: .3s ease;
+}
+
+.search-wrap.active .search {
+    width: 250px;
+    opacity: 1;
+    border-color: #555;
+}
+
+.profile {
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 6px;
+
+    background: linear-gradient(
+        135deg,
+        #e50914,
+        #760007
+    );
+
+    font-weight: 900;
+}
+
+
+/* =========================
+   HERO
+========================= */
+
+.hero {
+    position: relative;
+
+    height: 88vh;
+    min-height: 600px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 100px 5vw 80px;
+
+    overflow: hidden;
+}
+
+.hero-image {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    opacity: 0;
+
+    transform: scale(1.05);
+
+    transition:
+        opacity 1s ease,
+        transform 8s ease;
+}
+
+.hero-image.loaded {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.hero-shade {
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0,0,0,.98),
+            rgba(0,0,0,.72) 38%,
+            rgba(0,0,0,.12) 90%
+        );
+}
+
+.hero-bottom {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 260px;
+
+    background:
+        linear-gradient(
+            to top,
+            #050505,
+            transparent
+        );
+}
+
+.hero-content {
+    position: relative;
+    z-index: 10;
+
+    max-width: 650px;
+}
+
+.hero-kicker {
+    font-size: 12px;
+    font-weight: 900;
+
+    letter-spacing: 4px;
+
+    color: #ddd;
+
+    margin-bottom: 14px;
+}
+
+.hero-title {
+    margin: 0;
+
+    font-size:
+        clamp(45px, 6vw, 82px);
+
+    line-height: .95;
+
+    letter-spacing: -4px;
+}
+
+.hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 13px;
+
+    margin-top: 22px;
+
+    color: #ccc;
+
+    font-size: 14px;
+}
+
+.rating {
+    color: #46d369;
+    font-weight: 900;
+}
+
+.hero-description {
+    color: #ddd;
+
+    line-height: 1.65;
+
+    margin: 18px 0 0;
+
+    max-width: 600px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 12px;
+
+    margin-top: 27px;
+}
+
+
+/* =========================
+   BUTTONS
+========================= */
+
+.btn {
+    border: 0;
+    border-radius: 5px;
+
+    padding: 13px 24px;
+
+    font-weight: 900;
+
+    transition:
+        transform .2s,
+        filter .2s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.btn-play {
+    color: #000;
+    background: white;
+}
+
+.btn-info {
+    color: white;
+    background: rgba(90,90,90,.8);
+}
+
+
+/* =========================
+   MAIN
+========================= */
+
+.main {
+    position: relative;
+    z-index: 20;
+
+    margin-top: -90px;
+
+    padding: 0 4vw 80px;
+}
+
+.section {
+    margin-bottom: 45px;
+}
+
+.section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 5px;
+}
+
+.section-title {
+    margin: 0;
+
+    font-size: 21px;
+}
+
+.movie-row {
+    display: flex;
+
+    gap: 11px;
+
+    overflow-x: auto;
+
+    padding: 15px 5px 25px;
+
+    scrollbar-width: none;
+}
+
+.movie-row::-webkit-scrollbar {
+    display: none;
+}
+
+
+/* =========================
+   CARDS
+========================= */
+
+.movie-card {
+    position: relative;
+
+    flex:
+        0 0 clamp(145px,13vw,205px);
+
+    border-radius: 6px;
+
+    overflow: hidden;
+
+    background: #151515;
+
+    cursor: pointer;
+
+    transition:
+        transform .3s ease,
+        box-shadow .3s ease;
+}
+
+.movie-card:hover {
+    transform:
+        scale(1.055)
+        translateY(-5px);
+
+    z-index: 50;
+
+    box-shadow:
+        0 25px 60px
+        rgba(0,0,0,.85);
+}
+
+.poster {
+    width: 100%;
+
+    aspect-ratio: 2 / 3;
+
+    object-fit: cover;
+
+    background: #181818;
+}
+
+.card-gradient {
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to top,
+            rgba(0,0,0,.98),
+            transparent 65%
+        );
+
+    opacity: 0;
+
+    transition: opacity .25s;
+}
+
+.movie-card:hover .card-gradient {
+    opacity: 1;
+}
+
+.card-info {
+    position: absolute;
+
+    left: 11px;
+    right: 11px;
+    bottom: 10px;
+
+    opacity: 0;
+
+    transform: translateY(8px);
+
+    transition: .25s ease;
+}
+
+.movie-card:hover .card-info {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.card-title {
+    font-size: 13px;
+    font-weight: 900;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-meta {
+    display: flex;
+    gap: 8px;
+
+    margin-top: 5px;
+
+    color: #aaa;
+
+    font-size: 11px;
+}
+
+.card-rating {
+    color: #46d369;
+}
+
+.type-badge {
+    position: absolute;
+
+    top: 8px;
+    right: 8px;
+
+    padding: 5px 7px;
+
+    border-radius: 3px;
+
+    background: rgba(0,0,0,.75);
+
+    font-size: 9px;
+    font-weight: 900;
+}
+
+.progress-bar {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 3px;
+
+    background: rgba(255,255,255,.2);
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--red);
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+.search-screen {
+    position: fixed;
+    inset: 0;
+
+    z-index: 900;
+
+    display: none;
+
+    padding: 105px 4vw 60px;
+
+    overflow-y: auto;
+
+    background: #050505;
+}
+
+.search-screen.active {
+    display: block;
+}
+
+.search-heading {
+    margin: 0 0 25px;
+
+    font-size: 28px;
+}
+
+.search-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(145px,1fr)
+        );
+
+    gap: 16px;
+}
+
+
+/* =========================
+   MODAL
+========================= */
+
+.modal {
+    position: fixed;
+    inset: 0;
+
+    z-index: 3000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(0,0,0,.92);
+
+    backdrop-filter: blur(12px);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition: .25s ease;
+}
+
+.modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-box {
+    position: relative;
+
+    width: min(1000px,100%);
+
+    max-height: 92vh;
+
+    overflow-y: auto;
+
+    border-radius: 10px;
+
+    background: #151515;
+
+    box-shadow:
+        0 30px 100px
+        rgba(0,0,0,.95);
+
+    transform:
+        scale(.95)
+        translateY(20px);
+
+    transition: .3s ease;
+}
+
+.modal.active .modal-box {
+    transform:
+        scale(1)
+        translateY(0);
+}
+
+.modal-media {
+    position: relative;
+
+    height: 500px;
+
+    background: #000;
+
+    overflow: hidden;
+}
+
+.modal-image {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    transition: opacity .7s;
+}
+
+.modal-trailer {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    border: 0;
+
+    opacity: 0;
+
+    transition: opacity .7s;
+}
+
+.modal-trailer.active {
+    opacity: 1;
+}
+
+.modal-media-gradient {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 280px;
+
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            to top,
+            #151515,
+            transparent
+        );
+}
+
+.modal-close {
+    position: absolute;
+
+    top: 15px;
+    right: 15px;
+
+    z-index: 100;
+
+    width: 43px;
+    height: 43px;
+
+    border: 0;
+
+    border-radius: 50%;
+
+    color: white;
+
+    background: rgba(0,0,0,.8);
+
+    font-size: 26px;
+}
+
+.modal-content {
+    padding: 10px 30px 35px;
+}
+
+.modal-title {
+    margin: 0;
+
+    font-size: 34px;
+}
+
+.modal-meta {
+    margin: 9px 0 17px;
+
+    color: #aaa;
+
+    font-size: 13px;
+}
+
+.modal-description {
+    color: #ccc;
+
+    line-height: 1.7;
+
+    max-width: 800px;
+
+    margin-bottom: 25px;
+}
+
+/* More Like This row inside modal */
+.more-like-this {
+    margin: 20px 0 0;
+}
+
+.more-like-this h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    color: #ddd;
+}
+
+.more-like-this .movie-row {
+    padding: 5px 0 15px;
+}
+
+.more-like-this .movie-card {
+    flex: 0 0 120px;
+}
+
+.more-like-this .poster {
+    aspect-ratio: 2 / 3;
+}
+
+
+/* =========================
+   TV CONTROLS
+========================= */
+
+.tv-controls {
+    display: none;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+
+    margin-bottom: 20px;
+}
+
+.tv-controls.visible {
+    display: flex;
+}
+
+.select {
+    color: white;
+
+    background: #252525;
+
+    border: 1px solid #444;
+
+    border-radius: 5px;
+
+    padding: 10px 14px;
+
+    outline: none;
+}
+
+
+/* =========================
+   PLAYER
+========================= */
+
+.player {
+    position: fixed;
+    inset: 0;
+
+    z-index: 5000;
+
+    display: none;
+
+    background: #000;
+}
+
+.player.active {
+    display: block;
+}
+
+.player iframe {
+    width: 100%;
+    height: 100%;
+
+    border: 0;
+}
+
+.player-close {
+    position: absolute;
+
+    top: 18px;
+    right: 20px;
+
+    z-index: 5001;
+
+    width: 45px;
+    height: 45px;
+
+    border: 0;
+
+    border-radius: 50%;
+
+    color: white;
+
+    background: rgba(20,20,20,.9);
+
+    font-size: 26px;
+}
+
+
+/* =========================
+   LOADING
+========================= */
+
+.loading {
+    display: flex;
+    justify-content: center;
+
+    padding: 35px;
+}
+
+.spinner {
+    width: 28px;
+    height: 28px;
+
+    border:
+        3px solid #333;
+
+    border-top-color:
+        var(--red);
+
+    border-radius: 50%;
+
+    animation:
+        spin .8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================
+   ERROR
+========================= */
+
+.section-error {
+    color: #777;
+
+    padding: 25px 5px;
+
+    font-size: 13px;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:750px) {
+
+    .navbar {
+        height: 60px;
+        padding: 0 15px;
+    }
+
+    .logo {
+        font-size: 23px;
+    }
+
+    .nav-links {
+        display: none;
+    }
+
+    .search-wrap.active .search {
+        width: 180px;
+    }
+
+    .hero {
+        height: 78vh;
+        min-height: 580px;
+
+        padding:
+            100px 20px 70px;
+    }
+
+    .hero-shade {
+        background:
+            linear-gradient(
+                to top,
+                #050505,
+                rgba(0,0,0,.6),
+                rgba(0,0,0,.2)
+            );
+    }
+
+    .hero-title {
+        letter-spacing: -2px;
+    }
+
+    .hero-description {
+        font-size: 14px;
+    }
+
+    .main {
+        margin-top: -55px;
+
+        padding:
+            0 15px 60px;
+    }
+
+    .movie-card {
+        flex-basis: 140px;
+    }
+
+    .modal {
+        padding: 0;
+    }
+
+    .modal-box {
+        width: 100%;
+        max-height: 100vh;
+
+        border-radius: 0;
+    }
+
+    .modal-media {
+        height: 360px;
+    }
+
+    .modal-content {
+        padding:
+            10px 20px 30px;
+    }
+
+    .modal-title {
+        font-size: 27px;
+    }
+
+    .more-like-this .movie-card {
+        flex: 0 0 100px;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     NAVBAR
+========================= -->
+
+<nav
+    id="navbar"
+    class="navbar">
+
+    <div
+        class="logo"
+        onclick="goHome()">
+
+        MYFLIX
+
+    </div>
+
+
+    <div class="nav-links">
+
+        <span onclick="goHome()">
+            Home
+        </span>
+
+        <span onclick="scrollToSection('moviesSection')">
+            Movies
+        </span>
+
+        <span onclick="scrollToSection('tvSection')">
+            TV Shows
+        </span>
+
+        <span onclick="scrollToSection('topSection')">
+            Top 10
+        </span>
+
+    </div>
+
+
+    <div class="nav-right">
+
+        <div
+            id="searchWrap"
+            class="search-wrap">
+
+            <span
+                id="searchIcon"
+                class="search-icon">
+
+                🔍
+
+            </span>
+
+
+            <input
+                id="search"
+                class="search"
+                type="search"
+                placeholder="Search movies & shows..."
+                autocomplete="off">
+
+        </div>
+
+
+        <div class="profile">
+            M
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- =========================
+     HERO
+========================= -->
+
+<section class="hero">
+
+    <img
+        id="heroImage"
+        class="hero-image"
+        alt="">
+
+
+    <div class="hero-shade"></div>
+
+    <div class="hero-bottom"></div>
+
+
+    <div class="hero-content">
+
+        <div class="hero-kicker">
+            FEATURED
+        </div>
+
+
+        <h1
+            id="heroTitle"
+            class="hero-title">
+
+            Loading...
+
+        </h1>
+
+
+        <div class="hero-meta">
+
+            <span id="heroType">
+                —
+            </span>
+
+            <span id="heroYear">
+                —
+            </span>
+
+            <span
+                id="heroRating"
+                class="rating">
+
+                ★ —
+
+            </span>
+
+            <span>
+                HD
+            </span>
+
+        </div>
+
+
+        <p
+            id="heroDescription"
+            class="hero-description">
+
+            Loading featured content...
+
+        </p>
+
+
+        <div class="hero-buttons">
+
+            <button
+                class="btn btn-play"
+                onclick="playHero()">
+
+                ▶ Play
+
+            </button>
+
+
+            <button
+                class="btn btn-info"
+                onclick="showHeroInfo()">
+
+                ⓘ More Info
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     SEARCH
+========================= -->
+
+<section
+    id="searchScreen"
+    class="search-screen">
+
+    <h2 class="search-heading">
+        Search Results
+    </h2>
+
+
+    <div
+        id="searchGrid"
+        class="search-grid">
+    </div>
+
+</section>
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="main">
+
+
+    <section
+        id="topSection"
+        class="section">
+
+        <div class="section-head">
+
+            <h2 class="section-title">
+                🔥 Top 10 Today
+            </h2>
+
+        </div>
+
+
+        <div
+            id="topRow"
+            class="movie-row">
+        </div>
+
+    </section>
+
+
+    <section
+        id="continueSection"
+        class="section"
+        style="display:none">
+
+        <div class="section-head">
+
+            <h2 class="section-title">
+                ▶ Continue Watching
+            </h2>
+
+        </div>
+
+
+        <div
+            id="continueRow"
+            class="movie-row">
+        </div>
+
+    </section>
+
+
+    <section class="section">
+
+        <div class="section-head">
+
+            <h2 class="section-title">
+                ✨ Recommended For You
+            </h2>
+
+        </div>
+
+
+        <div
+            id="recommendedRow"
+            class="movie-row">
+        </div>
+
+    </section>
+
+
+    <section
+        id="moviesSection"
+        class="section">
+
+        <div class="section-head">
+
+            <h2 class="section-title">
+                🎬 Popular Movies
+            </h2>
+
+        </div>
+
+
+        <div
+            id="moviesRow"
+            class="movie-row">
+        </div>
+
+    </section>
+
+
+    <section
+        id="tvSection"
+        class="section">
+
+        <div class="section-head">
+
+            <h2 class="section-title">
+                📺 Popular TV Shows
+            </h2>
+
+        </div>
+
+
+        <div
+            id="tvRow"
+            class="movie-row">
+        </div>
+
+    </section>
+
+
+    <section class="section">
+
+        <div class="section-head">
+
+            <h2 class="section-title">
+                📡 Airing Today
+            </h2>
+
+        </div>
+
+
+        <div
+            id="airingRow"
+            class="movie-row">
+        </div>
+
+    </section>
+
+
+    <section class="section">
+
+        <div class="section-head">
+
+            <h2 class="section-title">
+                🚀 Discover More
+            </h2>
+
+        </div>
+
+
+        <div
+            id="discoverRow"
+            class="movie-row">
+        </div>
+
+    </section>
+
+
+    <div
+        id="loading"
+        class="loading">
+
+        <div class="spinner"></div>
+
+    </div>
+
+</main>
+
+
+<!-- =========================
+     DETAILS MODAL
+========================= -->
+
+<div
+    id="details"
+    class="modal">
+
+    <div class="modal-box">
+
+
+        <button
+            class="modal-close"
+            onclick="closeDetails()">
+
+            ×
+
+        </button>
+
+
+        <div class="modal-media">
+
+            <img
+                id="modalImage"
+                class="modal-image"
+                alt="">
+
+
+            <!-- Trailer ONLY loads after
+                 clicking the movie/show -->
+
+            <iframe
+                id="modalTrailer"
+                class="modal-trailer"
+                allow="autoplay; encrypted-media; fullscreen"
+                allowfullscreen>
+            </iframe>
+
+
+            <div class="modal-media-gradient"></div>
+
+        </div>
+
+
+        <div class="modal-content">
+
+            <h2
+                id="modalTitle"
+                class="modal-title">
+            </h2>
+
+
+            <div
+                id="modalMeta"
+                class="modal-meta">
+            </div>
+
+
+            <p
+                id="modalDescription"
+                class="modal-description">
+            </p>
+
+
+            <div
+                id="tvControls"
+                class="tv-controls">
+
+                <select
+                    id="seasonSelect"
+                    class="select">
+                </select>
+
+
+                <select
+                    id="episodeSelect"
+                    class="select">
+                </select>
+
+            </div>
+
+
+            <button
+                class="btn btn-play"
+                onclick="watchSelected()">
+
+                ▶ Watch Now
+
+            </button>
+
+
+            <!-- More Like This -->
+            <div class="more-like-this">
+                <h3>🎯 More Like This</h3>
+                <div
+                    id="similarRow"
+                    class="movie-row"
+                    style="padding:0 0 10px;">
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     PLAYER
+========================= -->
+
+<div
+    id="player"
+    class="player">
+
+    <button
+        class="player-close"
+        onclick="closePlayer()">
+
+        ×
+
+    </button>
+
+
+    <iframe
+        id="playerFrame"
+        allow="
+            autoplay;
+            encrypted-media;
+            fullscreen;
+            picture-in-picture
+        "
+        allowfullscreen>
+    </iframe>
+
+</div>
+
+
+<script>
+/*
+=========================================================
+TMDB API KEY
+=========================================================
+*/
+const TMDB_API_KEY = "f3840f6fb0756819216570ef2e4c4bf3";
+
+/*
+=========================================================
+CONFIG
+=========================================================
+*/
+
+const TMDB_API =
+    "https://api.themoviedb.org/3";
+
+const POSTER =
+    "https://image.tmdb.org/t/p/w500";
+
+const BACKDROP =
+    "https://image.tmdb.org/t/p/original";
+
+const PLAYER_MOVIE =
+    "https://www.vidking.net/embed/movie/";
+
+const PLAYER_TV =
+    "https://www.vidking.net/embed/tv/";
+
+
+let heroItem = null;
+
+let selectedItem = null;
+
+let selectedSeason = 1;
+
+let selectedEpisode = 1;
+
+let searchTimeout = null;
+
+let discoverPage = 1;
+
+let loadingMore = false;
+
+
+let history =
+    loadStorage(
+        "myflixHistory",
+        []
+    );
+
+
+let progress =
+    loadStorage(
+        "myflixProgress",
+        {}
+    );
+
+
+/*
+=========================================================
+STORAGE
+=========================================================
+*/
+
+function loadStorage(
+    key,
+    fallback
+) {
+
+    try {
+
+        const value =
+            localStorage.getItem(
+                key
+            );
+
+        if (!value)
+            return fallback;
+
+        return JSON.parse(
+            value
+        );
+
+    } catch(error) {
+
+        console.warn(
+            "Storage error:",
+            error
+        );
+
+        return fallback;
+
+    }
+
+}
+
+
+/*
+=========================================================
+API
+=========================================================
+*/
+
+async function api(
+    endpoint
+) {
+
+    if (
+        typeof TMDB_API_KEY ===
+            "undefined" ||
+        !TMDB_API_KEY ||
+        TMDB_API_KEY ===
+            "PASTE_YOUR_API_KEY_HERE"
+    ) {
+
+        throw new Error(
+            "TMDB API key is missing."
+        );
+
+    }
+
+
+    const separator =
+        endpoint.includes("?")
+            ? "&"
+            : "?";
+
+
+    const url =
+        TMDB_API +
+        endpoint +
+        separator +
+        "api_key=" +
+        encodeURIComponent(
+            TMDB_API_KEY
+        );
+
+
+    const response =
+        await fetch(
+            url,
+            {
+                method: "GET",
+
+                headers: {
+                    Accept:
+                        "application/json"
+                }
+            }
+        );
+
+
+    if (!response.ok) {
+
+        let message =
+            "HTTP " +
+            response.status;
+
+
+        try {
+
+            const errorData =
+                await response.json();
+
+
+            if (
+                errorData &&
+                errorData.status_message
+            ) {
+
+                message =
+                    errorData.status_message;
+
+            }
+
+        } catch(_) {}
+
+
+        throw new Error(
+            message
+        );
+
+    }
+
+
+    return response.json();
+
+}
+
+
+/*
+=========================================================
+IMAGE FALLBACK
+=========================================================
+*/
+
+function imageFallback(
+    element
+) {
+
+    element.onerror =
+        null;
+
+    element.src =
+        "data:image/svg+xml," +
+        encodeURIComponent(`
+
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="500"
+                height="750">
+
+                <rect
+                    width="500"
+                    height="750"
+                    fill="#181818"/>
+
+                <text
+                    x="250"
+                    y="375"
+                    text-anchor="middle"
+                    fill="#777"
+                    font-family="Arial"
+                    font-size="24">
+
+                    NO IMAGE
+
+                </text>
+
+            </svg>
+
+        `);
+
+}
+
+
+/*
+=========================================================
+ESCAPE HTML
+=========================================================
+*/
+
+function escapeHTML(
+    value
+) {
+
+    return String(
+        value || ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/*
+=========================================================
+TITLE
+=========================================================
+*/
+
+function getTitle(
+    item,
+    type
+) {
+
+    return type === "tv"
+        ? item.name
+        : item.title;
+
+}
+
+
+/*
+=========================================================
+YEAR
+=========================================================
+*/
+
+function getYear(
+    item,
+    type
+) {
+
+    const date =
+        type === "tv"
+            ? item.first_air_date
+            : item.release_date;
+
+
+    return date
+        ? date.substring(0,4)
+        : "—";
+
+}
+
+
+/*
+=========================================================
+CARD (with optional small flag for similar row)
+=========================================================
+*/
+
+function createCard(
+    item,
+    type,
+    small
+) {
+
+    if (
+        !item ||
+        !item.id ||
+        !item.poster_path
+    ) {
+
+        return null;
+
+    }
+
+
+    const title =
+        getTitle(
+            item,
+            type
+        );
+
+
+    const year =
+        getYear(
+            item,
+            type
+        );
+
+
+    const rating =
+        Number(
+            item.vote_average || 0
+        ).toFixed(1);
+
+
+    const key =
+        type +
+        "_" +
+        item.id;
+
+
+    const saved =
+        progress[key];
+
+
+    const percentage =
+        saved
+            ? Math.max(
+                0,
+                Math.min(
+                    100,
+                    Number(
+                        saved.progress || 0
+                    )
+                )
+            )
+            : 0;
+
+
+    const card =
+        document.createElement(
+            "div"
+        );
+
+
+    card.className =
+        "movie-card";
+
+
+    // If small flag, reduce size (we'll handle via CSS)
+    if (small) {
+        card.style.flex = "0 0 120px";
+    }
+
+
+    card.innerHTML = `
+
+        <img
+            class="poster"
+            src="${POSTER + item.poster_path}"
+            alt="${escapeHTML(title)}"
+            loading="lazy">
+
+
+        <div class="card-gradient"></div>
+
+
+        <div class="type-badge">
+            ${
+                type === "tv"
+                    ? "TV"
+                    : "MOVIE"
+            }
+        </div>
+
+
+        <div class="card-info">
+
+            <div class="card-title">
+                ${escapeHTML(title)}
+            </div>
+
+
+            <div class="card-meta">
+
+                <span class="card-rating">
+                    ★ ${rating}
+                </span>
+
+                <span>
+                    ${year}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        ${
+            percentage > 0
+
+                ? `
+
+                    <div class="progress-bar">
+
+                        <div
+                            class="progress-fill"
+                            style="
+                                width:${percentage}%;
+                            ">
+                        </div>
+
+                    </div>
+
+                  `
+
+                : ""
+        }
+
+    `;
+
+
+    const image =
+        card.querySelector(
+            ".poster"
+        );
+
+
+    image.addEventListener(
+        "error",
+        () => imageFallback(image)
+    );
+
+
+    /*
+    IMPORTANT:
+    Trailer does NOT start here.
+
+    It only starts when the
+    user clicks the card.
+    */
+
+    card.addEventListener(
+        "click",
+        () => {
+
+            showDetails(
+                item,
+                type
+            );
+
+        }
+    );
+
+
+    return card;
+
+}
+
+
+/*
+=========================================================
+DISPLAY ROW
+=========================================================
+*/
+
+function displayRow(
+    elementId,
+    items,
+    type
+) {
+
+    const row =
+        document.getElementById(
+            elementId
+        );
+
+
+    if (!row)
+        return;
+
+
+    row.innerHTML =
+        "";
+
+
+    const valid =
+        (items || [])
+            .filter(
+                item =>
+                    item &&
+                    item.poster_path
+            );
+
+
+    if (!valid.length) {
+
+        showSectionError(
+            elementId
+        );
+
+        return;
+
+    }
+
+
+    valid.forEach(
+        item => {
+
+            const card =
+                createCard(
+                    item,
+                    type,
+                    false
+                );
+
+
+            if (card)
+                row.appendChild(
+                    card
+                );
+
+        }
+    );
+
+}
+
+
+/*
+=========================================================
+MIXED ROW
+=========================================================
+*/
+
+function displayMixed(
+    elementId,
+    items
+) {
+
+    const row =
+        document.getElementById(
+            elementId
+        );
+
+
+    if (!row)
+        return;
+
+
+    row.innerHTML =
+        "";
+
+
+    appendMixed(
+        elementId,
+        items
+    );
+
+
+    if (!row.children.length) {
+
+        showSectionError(
+            elementId
+        );
+
+    }
+
+}
+
+
+function appendMixed(
+    elementId,
+    items
+) {
+
+    const row =
+        document.getElementById(
+            elementId
+        );
+
+
+    if (!row)
+        return;
+
+
+    (items || []).forEach(
+        item => {
+
+            if (
+                !item.poster_path ||
+                (
+                    item.media_type !== "movie" &&
+                    item.media_type !== "tv"
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            const card =
+                createCard(
+                    item,
+                    item.media_type,
+                    false
+                );
+
+
+            if (card)
+                row.appendChild(
+                    card
+                );
+
+        }
+    );
+
+}
+
+
+/*
+=========================================================
+HERO
+=========================================================
+*/
+
+async function loadHero() {
+
+    try {
+
+        const data =
+            await api(
+                "/trending/all/week?language=en-US"
+            );
+
+
+        const items =
+            (data.results || [])
+                .filter(
+                    item =>
+                        (
+                            item.media_type === "movie" ||
+                            item.media_type === "tv"
+                        ) &&
+                        item.backdrop_path
+                );
+
+
+        if (!items.length)
+            throw new Error(
+                "No hero content."
+            );
+
+
+        heroItem =
+            items[
+                Math.floor(
+                    Math.random() *
+                    items.length
+                )
+            ];
+
+
+        const type =
+            heroItem.media_type;
+
+
+        const image =
+            document.getElementById(
+                "heroImage"
+            );
+
+
+        image.classList.remove(
+            "loaded"
+        );
+
+
+        image.src =
+            BACKDROP +
+            heroItem.backdrop_path;
+
+
+        image.onload =
+            () => {
+
+                image.classList.add(
+                    "loaded"
+                );
+
+            };
+
+
+        document.getElementById(
+            "heroTitle"
+        ).textContent =
+            getTitle(
+                heroItem,
+                type
+            );
+
+
+        document.getElementById(
+            "heroType"
+        ).textContent =
+            type === "tv"
+                ? "TV Show"
+                : "Movie";
+
+
+        document.getElementById(
+            "heroYear"
+        ).textContent =
+            getYear(
+                heroItem,
+                type
+            );
+
+
+        document.getElementById(
+            "heroRating"
+        ).textContent =
+            "★ " +
+            Number(
+                heroItem.vote_average || 0
+            ).toFixed(1);
+
+
+        document.getElementById(
+            "heroDescription"
+        ).textContent =
+            heroItem.overview ||
+            "Discover something new.";
+
+    } catch(error) {
+
+        console.error(
+            "Hero failed:",
+            error
+        );
+
+
+        document.getElementById(
+            "heroTitle"
+        ).textContent =
+            "MYFLIX";
+
+
+        document.getElementById(
+            "heroDescription"
+        ).textContent =
+            "Browse movies and TV shows.";
+
+    }
+
+}
+
+
+/*
+=========================================================
+TOP 10
+=========================================================
+*/
+
+async function loadTop10() {
+
+    try {
+
+        const data =
+            await api(
+                "/trending/all/day?language=en-US"
+            );
+
+
+        const row =
+            document.getElementById(
+                "topRow"
+            );
+
+
+        row.innerHTML =
+            "";
+
+
+        const items =
+            (data.results || [])
+                .filter(
+                    item =>
+                        (
+                            item.media_type === "movie" ||
+                            item.media_type === "tv"
+                        ) &&
+                        item.poster_path
+                )
+                .slice(0,10);
+
+
+        items.forEach(
+            (item,index) => {
+
+                const card =
+                    createCard(
+                        item,
+                        item.media_type,
+                        false
+                    );
+
+
+                if (!card)
+                    return;
+
+
+                const rank =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                rank.textContent =
+                    "#" +
+                    (index + 1);
+
+
+                rank.style.cssText = `
+                    position:absolute;
+                    left:8px;
+                    bottom:5px;
+                    z-index:20;
+                    font-size:30px;
+                    font-weight:950;
+                    text-shadow:
+                        0 3px 10px #000;
+                `;
+
+
+                card.appendChild(
+                    rank
+                );
+
+
+                row.appendChild(
+                    card
+                );
+
+            }
+        );
+
+
+    } catch(error) {
+
+        console.error(
+            "Top 10 failed:",
+            error
+        );
+
+
+        showSectionError(
+            "topRow"
+        );
+
+    }
+
+}
+
+
+/*
+=========================================================
+MOVIES
+=========================================================
+*/
+
+async function loadMovies() {
+
+    try {
+
+        const data =
+            await api(
+                "/movie/popular" +
+                "?language=en-US" +
+                "&page=1"
+            );
+
+
+        displayRow(
+            "moviesRow",
+            data.results,
+            "movie"
+        );
+
+    } catch(error) {
+
+        console.error(
+            "Movies failed:",
+            error
+        );
+
+
+        showSectionError(
+            "moviesRow"
+        );
+
+    }
+
+}
+
+
+/*
+=========================================================
+TV
+=========================================================
+*/
+
+async function loadTV() {
+
+    try {
+
+        const data =
+            await api(
+                "/tv/popular" +
+                "?language=en-US" +
+                "&page=1"
+            );
+
+
+        displayRow(
+            "tvRow",
+            data.results,
+            "tv"
+        );
+
+    } catch(error) {
+
+        console.error(
+            "TV failed:",
+            error
+        );
+
+
+        showSectionError(
+            "tvRow"
+        );
+
+    }
+
+}
+
+
+/*
+=========================================================
+AIRING TODAY
+=========================================================
+*/
+
+async function loadAiring() {
+
+    try {
+
+        const data =
+            await api(
+                "/tv/airing_today" +
+                "?language=en-US" +
+                "&page=1"
+            );
+
+
+        displayRow(
+            "airingRow",
+            data.results,
+            "tv"
+        );
+
+    } catch(error) {
+
+        console.error(
+            "Airing failed:",
+            error
+        );
+
+
+        showSectionError(
+            "airingRow"
+        );
+
+    }
+
+}
+
+
+/*
+=========================================================
+RECOMMENDATIONS
+=========================================================
+*/
+
+async function loadRecommendations() {
+
+    try {
+
+        if (!history.length) {
+
+            const data =
+                await api(
+                    "/trending/all/week?language=en-US"
+                );
+
+
+            displayMixed(
+                "recommendedRow",
+                data.results
+            );
+
+
+            return;
+
+        }
+
+
+        const last =
+            history[
+                history.length - 1
+            ];
+
+
+        const endpoint =
+            last.type === "tv"
+
+                ? `/tv/${last.id}/recommendations?language=en-US&page=1`
+
+                : `/movie/${last.id}/recommendations?language=en-US&page=1`;
+
+
+        const data =
+            await api(
+                endpoint
+            );
+
+
+        displayRow(
+            "recommendedRow",
+            data.results,
+            last.type
+        );
+
+
+    } catch(error) {
+
+        console.error(
+            "Recommendations failed:",
+            error
+        );
+
+
+        try {
+
+            const data =
+                await api(
+                    "/trending/all/week?language=en-US"
+                );
+
+
+            displayMixed(
+                "recommendedRow",
+                data.results
+            );
+
+        } catch(_) {
+
+            showSectionError(
+                "recommendedRow"
+            );
+
+        }
+
+    }
+
+}
+
+
+/*
+=========================================================
+CONTINUE WATCHING
+=========================================================
+*/
+
+async function loadContinueWatching() {
+
+    const section =
+        document.getElementById(
+            "continueSection"
+        );
+
+
+    const row =
+        document.getElementById(
+            "continueRow"
+        );
+
+
+    if (!history.length) {
+
+        section.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    row.innerHTML =
+        "";
+
+
+    const recent =
+        history
+            .slice()
+            .reverse()
+            .slice(0,10);
+
+
+    for (
+        const saved of recent
+    ) {
+
+        try {
+
+            const endpoint =
+                saved.type === "tv"
+
+                    ? `/tv/${saved.id}?language=en-US`
+
+                    : `/movie/${saved.id}?language=en-US`;
+
+
+            const item =
+                await api(
+                    endpoint
+                );
+
+
+            const card =
+                createCard(
+                    item,
+                    saved.type,
+                    false
+                );
+
+
+            if (card)
+                row.appendChild(
+                    card
+                );
+
+
+        } catch(error) {
+
+            console.warn(
+                "History failed:",
+                saved.id
+            );
+
+        }
+
+    }
+
+
+    if (row.children.length) {
+
+        section.style.display =
+            "block";
+
+    }
+
+}
+
+
+/*
+=========================================================
+DISCOVER / ENDLESS CONTENT
+=========================================================
+*/
+
+async function loadMore() {
+
+    if (loadingMore)
+        return;
+
+
+    loadingMore = true;
+
+
+    try {
+
+        const data =
+            await api(
+                "/trending/all/week" +
+                "?language=en-US" +
+                "&page=" +
+                discoverPage
+            );
+
+
+        appendMixed(
+            "discoverRow",
+            data.results
+        );
+
+
+        discoverPage++;
+
+
+    } catch(error) {
+
+        console.error(
+            "Discover failed:",
+            error
+        );
+
+    }
+
+
+    loadingMore = false;
+
+}
+
+
+window.addEventListener(
+    "scroll",
+    () => {
+
+        if (
+            window.innerHeight +
+            window.scrollY >=
+            document.body.offsetHeight -
+            1000
+        ) {
+
+            loadMore();
+
+        }
+
+    }
+);
+
+
+/*
+=========================================================
+DETAILS MODAL
+=========================================================
+*/
+
+async function showDetails(
+    item,
+    type
+) {
+
+    selectedItem = {
+        ...item,
+        media_type: type
+    };
+
+
+    const modal =
+        document.getElementById(
+            "details"
+        );
+
+
+    const modalImage =
+        document.getElementById(
+            "modalImage"
+        );
+
+
+    const trailer =
+        document.getElementById(
+            "modalTrailer"
+        );
+
+
+    trailer.src =
+        "";
+
+
+    trailer.classList.remove(
+        "active"
+    );
+
+
+    modalImage.style.opacity =
+        "1";
+
+
+    if (
+        item.backdrop_path
+    ) {
+
+        modalImage.src =
+            BACKDROP +
+            item.backdrop_path;
+
+    } else if (
+        item.poster_path
+    ) {
+
+        modalImage.src =
+            POSTER +
+            item.poster_path;
+
+    }
+
+
+    modalImage.onerror =
+        () => imageFallback(
+            modalImage
+        );
+
+
+    document.getElementById(
+        "modalTitle"
+    ).textContent =
+        getTitle(
+            item,
+            type
+        );
+
+
+    document.getElementById(
+        "modalMeta"
+    ).textContent =
+
+        (
+            type === "tv"
+                ? "TV Show"
+                : "Movie"
+        )
+
+        +
+
+        " • "
+
+        +
+
+        getYear(
+            item,
+            type
+        )
+
+        +
+
+        " • ★ "
+
+        +
+
+        Number(
+            item.vote_average || 0
+        ).toFixed(1);
+
+
+    document.getElementById(
+        "modalDescription"
+    ).textContent =
+        item.overview ||
+        "No description available.";
+
+
+    const controls =
+        document.getElementById(
+            "tvControls"
+        );
+
+
+    if (type === "tv") {
+
+        controls.classList.add(
+            "visible"
+        );
+
+
+        selectedSeason = 1;
+        selectedEpisode = 1;
+
+
+        await setupTVControls(
+            item.id
+        );
+
+    } else {
+
+        controls.classList.remove(
+            "visible"
+        );
+
+    }
+
+
+    modal.classList.add(
+        "active"
+    );
+
+
+    document.body.style.overflow =
+        "hidden";
+
+
+    /*
+    Trailer is fetched ONLY here,
+    after the user clicked.
+    */
+
+    const video =
+        await getTrailer(
+            item.id,
+            type
+        );
+
+
+    if (
+        !selectedItem ||
+        selectedItem.id !== item.id ||
+        selectedItem.media_type !== type
+    ) {
+
+        return;
+
+    }
+
+
+    if (video) {
+
+        trailer.src =
+            youtubeURL(
+                video.key
+            );
+
+
+        trailer.onload =
+            () => {
+
+                if (
+                    selectedItem &&
+                    selectedItem.id === item.id
+                ) {
+
+                    trailer.classList.add(
+                        "active"
+                    );
+
+
+                    modalImage.style.opacity =
+                        "0";
+
+                }
+
+            };
+
+    }
+
+
+    // =============================================
+    // MORE LIKE THIS
+    // =============================================
+    const similarRow =
+        document.getElementById(
+            "similarRow"
+        );
+
+    similarRow.innerHTML =
+        `<div class="loading"><div class="spinner"></div></div>`;
+
+
+    try {
+
+        const endpoint =
+            type === "tv"
+                ? `/tv/${item.id}/similar?language=en-US&page=1`
+                : `/movie/${item.id}/similar?language=en-US&page=1`;
+
+
+        const similarData =
+            await api(
+                endpoint
+            );
+
+
+        const similarItems =
+            (similarData.results || [])
+                .filter(
+                    sim =>
+                        sim.poster_path
+                )
+                .slice(0,10);
+
+
+        similarRow.innerHTML =
+            "";
+
+
+        if (!similarItems.length) {
+
+            similarRow.innerHTML =
+                `<div class="section-error" style="padding:5px 0;">
+                    No similar titles found.
+                </div>`;
+
+        } else {
+
+            similarItems.forEach(
+                sim => {
+
+                    const card =
+                        createCard(
+                            sim,
+                            type,
+                            true   // small
+                        );
+
+
+                    if (card)
+                        similarRow.appendChild(
+                            card
+                        );
+
+                }
+            );
+
+        }
+
+    } catch(error) {
+
+        console.warn(
+            "Similar fetch failed:",
+            error
+        );
+
+
+        similarRow.innerHTML =
+            `<div class="section-error" style="padding:5px 0;">
+                Could not load similar titles.
+            </div>`;
+
+    }
+
+}
+
+
+/*
+=========================================================
+GET TRAILER
+=========================================================
+*/
+
+async function getTrailer(
+    id,
+    type
+) {
+
+    try {
+
+        const endpoint =
+            type === "tv"
+
+                ? `/tv/${id}/videos?language=en-US`
+
+                : `/movie/${id}/videos?language=en-US`;
+
+
+        const data =
+            await api(
+                endpoint
+            );
+
+
+        const videos =
+            data.results || [];
+
+
+        return (
+
+            videos.find(
+                video =>
+                    video.site === "YouTube" &&
+                    video.type === "Trailer" &&
+                    video.official === true
+            )
+
+            ||
+
+            videos.find(
+                video =>
+                    video.site === "YouTube" &&
+                    video.type === "Trailer"
+            )
+
+            ||
+
+            videos.find(
+                video =>
+                    video.site === "YouTube" &&
+                    video.type === "Teaser"
+            )
+
+            ||
+
+            null
+
+        );
+
+    } catch(error) {
+
+        console.warn(
+            "Trailer unavailable:",
+            error
+        );
+
+
+        return null;
+
+    }
+
+}
+
+
+function youtubeURL(
+    key
+) {
+
+    return (
+        "https://www.youtube.com/embed/" +
+        encodeURIComponent(key) +
+        "?autoplay=1" +
+        "&mute=1" +
+        "&controls=1" +
+        "&rel=0" +
+        "&modestbranding=1" +
+        "&playsinline=1"
+    );
+
+}
+
+
+/*
+=========================================================
+TV SEASONS
+=========================================================
+*/
+
+async function setupTVControls(
+    showID
+) {
+
+    const seasonSelect =
+        document.getElementById(
+            "seasonSelect"
+        );
+
+
+    const episodeSelect =
+        document.getElementById(
+            "episodeSelect"
+        );
+
+
+    seasonSelect.innerHTML =
+        "";
+
+
+    episodeSelect.innerHTML =
+        "";
+
+
+    try {
+
+        const show =
+            await api(
+                `/tv/${showID}?language=en-US`
+            );
+
+
+        const seasons =
+            (show.seasons || [])
+                .filter(
+                    season =>
+                        season.season_number >= 0
+                );
+
+
+        if (!seasons.length) {
+
+            seasonSelect.innerHTML =
+                `<option value="1">
+                    Season 1
+                </option>`;
+
+
+            await loadEpisodes(
+                showID,
+                1
+            );
+
+
+            return;
+
+        }
+
+
+        seasons.forEach(
+            season => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    season.season_number;
+
+
+                option.textContent =
+                    season.season_number === 0
+
+                        ? "Specials"
+
+                        : "Season " +
+                          season.season_number;
+
+
+                seasonSelect.appendChild(
+                    option
+                );
+
+            }
+        );
+
+
+        const seasonOne =
+            [...seasonSelect.options]
+                .find(
+                    option =>
+                        option.value === "1"
+                );
+
+
+        seasonSelect.value =
+            seasonOne
+                ? "1"
+                : seasonSelect.options[0].value;
+
+
+        selectedSeason =
+            Number(
+                seasonSelect.value
+            );
+
+
+        await loadEpisodes(
+            showID,
+            selectedSeason
+        );
+
+
+    } catch(error) {
+
+        console.error(
+            "Season loading failed:",
+            error
+        );
+
+
+        seasonSelect.innerHTML =
+            `<option value="1">
+                Season 1
+            </option>`;
+
+
+        await loadEpisodes(
+            showID,
+            1
+        );
+
+    }
+
+}
+
+
+/*
+=========================================================
+TV EPISODES
+=========================================================
+*/
+
+async function loadEpisodes(
+    showID,
+    seasonNumber
+) {
+
+    const episodeSelect =
+        document.getElementById(
+            "episodeSelect"
+        );
+
+
+    episodeSelect.innerHTML =
+        "";
+
+
+    try {
+
+        const season =
+            await api(
+                `/tv/${showID}/season/${seasonNumber}?language=en-US`
+            );
+
+
+        const episodes =
+            season.episodes || [];
+
+
+        if (!episodes.length) {
+
+            episodeSelect.innerHTML =
+                `<option value="1">
+                    Episode 1
+                </option>`;
+
+
+            selectedEpisode = 1;
+
+            return;
+
+        }
+
+
+        episodes.forEach(
+            episode => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    episode.episode_number;
+
+
+                option.textContent =
+                    "Episode " +
+                    episode.episode_number +
+                    " — " +
+                    (
+                        episode.name ||
+                        "Untitled"
+                    );
+
+
+                episodeSelect.appendChild(
+                    option
+                );
+
+            }
+        );
+
+
+        selectedEpisode =
+            Number(
+                episodeSelect.value || 1
+            );
+
+
+    } catch(error) {
+
+        console.error(
+            "Episode loading failed:",
+            error
+        );
+
+
+        episodeSelect.innerHTML =
+            `<option value="1">
+                Episode 1
+            </option>`;
+
+
+        selectedEpisode = 1;
+
+    }
+
+}
+
+
+document
+    .getElementById(
+        "seasonSelect"
+    )
+    .addEventListener(
+        "change",
+        async event => {
+
+            if (!selectedItem)
+                return;
+
+
+            selectedSeason =
+                Number(
+                    event.target.value
+                );
+
+
+            await loadEpisodes(
+                selectedItem.id,
+                selectedSeason
+            );
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "episodeSelect"
+    )
+    .addEventListener(
+        "change",
+        event => {
+
+            selectedEpisode =
+                Number(
+                    event.target.value
+                );
+
+        }
+    );
+
+
+/*
+=========================================================
+WATCH
+=========================================================
+*/
+
+function watchSelected() {
+
+    if (!selectedItem)
+        return;
+
+
+    if (
+        selectedItem.media_type === "tv"
+    ) {
+
+        selectedSeason =
+            Number(
+                document.getElementById(
+                    "seasonSelect"
+                ).value || 1
+            );
+
+
+        selectedEpisode =
+            Number(
+                document.getElementById(
+                    "episodeSelect"
+                ).value || 1
+            );
+
+    }
+
+
+    watchItem(
+        selectedItem
+    );
+
+}
+
+
+function watchItem(
+    item
+) {
+
+    if (
+        !item ||
+        !item.id
+    )
+        return;
+
+
+    /*
+    SAVE WATCH HISTORY
+    */
+
+    history =
+        history.filter(
+            saved =>
+                !(
+                    saved.id === item.id &&
+                    saved.type === item.media_type
+                )
+        );
+
+
+    history.push({
+
+        id:
+            item.id,
+
+        type:
+            item.media_type,
+
+        title:
+            getTitle(
+                item,
+                item.media_type
+            ),
+
+        poster:
+            item.poster_path,
+
+        season:
+            item.media_type === "tv"
+                ? selectedSeason
+                : null,
+
+        episode:
+            item.media_type === "tv"
+                ? selectedEpisode
+                : null,
+
+        updated:
+            Date.now()
+
+    });
+
+
+    history =
+        history.slice(-50);
+
+
+    localStorage.setItem(
+        "myflixHistory",
+        JSON.stringify(
+            history
+        )
+    );
+
+
+    /*
+    BUILD PLAYER URL
+    */
+
+    let playerURL;
+
+
+    if (
+        item.media_type === "tv"
+    ) {
+
+        playerURL =
+            PLAYER_TV +
+
+            encodeURIComponent(
+                item.id
+            ) +
+
+            "/" +
+
+            encodeURIComponent(
+                selectedSeason || 1
+            ) +
+
+            "/" +
+
+            encodeURIComponent(
+                selectedEpisode || 1
+            ) +
+
+            "?nextEpisode=true" +
+
+            "&episodeSelector=true";
+
+    } else {
+
+        playerURL =
+            PLAYER_MOVIE +
+
+            encodeURIComponent(
+                item.id
+            );
+
+    }
+
+
+    document.getElementById(
+        "playerFrame"
+    ).src =
+        playerURL;
+
+
+    document.getElementById(
+        "player"
+    ).classList.add(
+        "active"
+    );
+
+
+    closeDetails();
+
+
+    document.body.style.overflow =
+        "hidden";
+
+
+    loadRecommendations();
+
+}
+
+
+/*
+=========================================================
+HERO
+=========================================================
+*/
+
+function playHero() {
+
+    if (!heroItem)
+        return;
+
+
+    selectedSeason = 1;
+
+    selectedEpisode = 1;
+
+
+    watchItem(
+        heroItem
+    );
+
+}
+
+
+function showHeroInfo() {
+
+    if (!heroItem)
+        return;
+
+
+    showDetails(
+        heroItem,
+        heroItem.media_type
+    );
+
+}
+
+
+/*
+=========================================================
+CLOSE DETAILS
+=========================================================
+*/
+
+function closeDetails() {
+
+    const modal =
+        document.getElementById(
+            "details"
+        );
+
+
+    const trailer =
+        document.getElementById(
+            "modalTrailer"
+        );
+
+
+    trailer.src =
+        "";
+
+
+    trailer.classList.remove(
+        "active"
+    );
+
+
+    modal.classList.remove(
+        "active"
+    );
+
+
+    selectedItem =
+        null;
+
+
+    document.body.style.overflow =
+        "";
+
+}
+
+
+/*
+=========================================================
+CLOSE PLAYER
+=========================================================
+*/
+
+function closePlayer() {
+
+    const frame =
+        document.getElementById(
+            "playerFrame"
+        );
+
+
+    frame.src =
+        "";
+
+
+    document.getElementById(
+        "player"
+    ).classList.remove(
+        "active"
+    );
+
+
+    document.body.style.overflow =
+        "";
+
+
+    loadContinueWatching();
+
+}
+
+
+/*
+=========================================================
+SEARCH
+=========================================================
+*/
+
+const searchWrap =
+    document.getElementById(
+        "searchWrap"
+    );
+
+
+const searchIcon =
+    document.getElementById(
+        "searchIcon"
+    );
+
+
+const searchInput =
+    document.getElementById(
+        "search"
+    );
+
+
+const searchScreen =
+    document.getElementById(
+        "searchScreen"
+    );
+
+
+const searchGrid =
+    document.getElementById(
+        "searchGrid"
+    );
+
+
+searchIcon.addEventListener(
+    "click",
+    () => {
+
+        searchWrap.classList.add(
+            "active"
+        );
+
+
+        searchInput.focus();
+
+    }
+);
+
+
+searchInput.addEventListener(
+    "input",
+    () => {
+
+        clearTimeout(
+            searchTimeout
+        );
+
+
+        const query =
+            searchInput.value.trim();
+
+
+        if (!query) {
+
+            searchScreen.classList.remove(
+                "active"
+            );
+
+
+            return;
+
+        }
+
+
+        searchTimeout =
+            setTimeout(
+                () => {
+
+                    performSearch(
+                        query
+                    );
+
+                },
+                350
+            );
+
+    }
+);
+
+
+async function performSearch(
+    query
+) {
+
+    searchScreen.classList.add(
+        "active"
+    );
+
+
+    searchGrid.innerHTML =
+        `<div class="loading">
+            <div class="spinner"></div>
+        </div>`;
+
+
+    try {
+
+        const data =
+            await api(
+                "/search/multi" +
+                "?language=en-US" +
+                "&include_adult=false" +
+                "&page=1" +
+                "&query=" +
+                encodeURIComponent(
+                    query
+                )
+            );
+
+
+        searchGrid.innerHTML =
+            "";
+
+
+        const results =
+            (data.results || [])
+                .filter(
+                    item =>
+                        (
+                            item.media_type === "movie" ||
+                            item.media_type === "tv"
+                        ) &&
+                        item.poster_path
+                );
+
+
+        if (!results.length) {
+
+            searchGrid.innerHTML =
+                `<div class="section-error">
+                    No movies or TV shows found.
+                </div>`;
+
+
+            return;
+
+        }
+
+
+        results.forEach(
+            item => {
+
+                const card =
+                    createCard(
+                        item,
+                        item.media_type,
+                        false
+                    );
+
+
+                if (card)
+                    searchGrid.appendChild(
+                        card
+                    );
+
+            }
+        );
+
+
+    } catch(error) {
+
+        console.error(
+            "Search failed:",
+            error
+        );
+
+
+        searchGrid.innerHTML =
+            `<div class="section-error">
+                Search failed. Check your API key and connection.
+            </div>`;
+
+    }
+
+}
+
+
+/*
+=========================================================
+NAVIGATION
+=========================================================
+*/
+
+function goHome() {
+
+    searchScreen.classList.remove(
+        "active"
+    );
+
+
+    searchWrap.classList.remove(
+        "active"
+    );
+
+
+    searchInput.value =
+        "";
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+function scrollToSection(
+    id
+) {
+
+    searchScreen.classList.remove(
+        "active"
+    );
+
+
+    const element =
+        document.getElementById(
+            id
+        );
+
+
+    if (!element)
+        return;
+
+
+    element.scrollIntoView({
+        behavior: "smooth"
+    });
+
+}
+
+
+/*
+=========================================================
+NAVBAR SCROLL
+=========================================================
+*/
+
+window.addEventListener(
+    "scroll",
+    () => {
+
+        document
+            .getElementById(
+                "navbar"
+            )
+            .classList.toggle(
+                "scrolled",
+                window.scrollY > 50
+            );
+
+    }
+);
+
+
+/*
+=========================================================
+KEYBOARD
+=========================================================
+*/
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            closeDetails();
+
+            closePlayer();
+
+            searchScreen.classList.remove(
+                "active"
+            );
+
+        }
+
+    }
+);
+
+
+/*
+=========================================================
+ERROR
+=========================================================
+*/
+
+function showSectionError(
+    elementId
+) {
+
+    const element =
+        document.getElementById(
+            elementId
+        );
+
+
+    if (!element)
+        return;
+
+
+    element.innerHTML =
+        `<div class="section-error">
+            Content couldn't be loaded right now.
+        </div>`;
+
+}
+
+
+/*
+=========================================================
+START
+=========================================================
+*/
+
+async function start() {
+
+    if (
+        typeof TMDB_API_KEY ===
+            "undefined" ||
+        !TMDB_API_KEY ||
+        TMDB_API_KEY ===
+            "PASTE_YOUR_API_KEY_HERE"
+    ) {
+
+        document.getElementById(
+            "loading"
+        ).innerHTML = `
+
+            <div
+                style="
+                    text-align:center;
+                    color:#aaa;
+                ">
+
+                <h3 style="color:white">
+                    TMDB API key missing
+                </h3>
+
+                <p>
+                    Scroll to the very bottom
+                    of this HTML file and paste
+                    your TMDB API key.
+                </p>
+
+            </div>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    await Promise.allSettled([
+
+        loadHero(),
+
+        loadTop10(),
+
+        loadMovies(),
+
+        loadTV(),
+
+        loadAiring(),
+
+        loadRecommendations(),
+
+        loadContinueWatching()
+
+    ]);
+
+
+    await loadMore();
+
+
+    document.getElementById(
+        "loading"
+    ).style.display =
+        "none";
+
+}
+
+
+start();
+
+</script>
+
+</body>
+</html><script>try{}catch(e){document.body.innerHTML+='<div style="color:red;background:#ffe6e6;padding:10px;margin-top:20px;border-radius:4px;border:1px solid red;"><strong>Runtime Error:</strong> '+e.message+'</div>'}</script></body></html>
