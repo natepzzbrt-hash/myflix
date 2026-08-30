@@ -40,8 +40,8 @@ body{background:#0a0a0a;color:#fff;font-family:'Segoe UI',Arial,sans-serif;min-h
 .section .head .search-input{background:#1a1a1a;border:1px solid #444;border-radius:30px;padding:6px 16px;color:#fff;font-size:14px;outline:none;flex:1;max-width:350px}
 .section .head .search-input:focus{border-color:#e50914}
 .row{display:flex;gap:12px;overflow-x:auto;padding:10px 0 20px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.row::-webkit-scrollbar{display:none}
-.row-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;padding:10px 0}
-.card{position:relative;border-radius:8px;overflow:hidden;background:#151515;transition:transform .3s,box-shadow .3s;cursor:pointer}
+.row-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;padding:10px 0}
+.card{position:relative;border-radius:8px;overflow:hidden;background:#151515;transition:transform .3s,box-shadow .3s;cursor:pointer;flex:0 0 200px}
 .card:hover{transform:scale(1.04);z-index:10;box-shadow:0 20px 50px rgba(0,0,0,.9)}
 .card .poster{width:100%;aspect-ratio:2/3;object-fit:cover;background:#1a1a1a;display:block}
 .card .info{position:absolute;bottom:0;left:0;right:0;padding:12px 10px;background:linear-gradient(to top,rgba(0,0,0,.95),transparent);opacity:0;transition:opacity .25s}
@@ -70,8 +70,12 @@ body{background:#0a0a0a;color:#fff;font-family:'Segoe UI',Arial,sans-serif;min-h
 .modal .box .content .tv-controls{display:none;gap:10px;flex-wrap:wrap;margin-bottom:15px}
 .modal .box .content .tv-controls.visible{display:flex}
 .modal .box .content .tv-controls select{background:#252525;border:1px solid #444;border-radius:5px;padding:10px 14px;color:#fff;font-size:14px;min-width:120px}
-.modal .box .content .btn-watch{background:#e50914;color:#fff;padding:12px 32px;border-radius:5px;font-weight:700;font-size:15px;border:none;cursor:pointer}.modal .box .content .btn-watch:hover{background:#b20710}
-.modal .box .content .similar{margin-top:25px}.modal .box .content .similar h3{font-size:18px;color:#ccc;margin:0 0 8px}.modal .box .content .similar .row{display:flex;gap:10px;overflow-x:auto;padding:5px 0}.modal .box .content .similar .row .card{flex:0 0 110px}
+.modal .box .content .action-buttons{display:flex;flex-wrap:wrap;gap:12px;margin-top:5px}
+.modal .box .content .btn-watch{background:#e50914;color:#fff;padding:12px 32px;border-radius:5px;font-weight:700;font-size:15px;border:none;cursor:pointer}
+.modal .box .content .btn-watch:hover{background:#b20710}
+.modal .box .content .btn-action{background:#333;color:#fff;padding:12px 28px;border-radius:5px;font-weight:600;font-size:14px;border:none;cursor:pointer;transition:background .2s,transform .2s}
+.modal .box .content .btn-action:hover{background:#444;transform:scale(1.03)}
+.modal .box .content .similar{margin-top:25px}.modal .box .content .similar h3{font-size:18px;color:#ccc;margin:0 0 8px}.modal .box .content .similar .row{display:flex;gap:10px;overflow-x:auto;padding:5px 0}.modal .box .content .similar .row .card{flex:0 0 130px}
 .settings-modal .box{max-width:500px;padding:30px}.settings-modal .box h2{margin-top:0}.settings-modal .box label{display:block;color:#ccc;margin:15px 0 5px;font-weight:600}
 .settings-modal .box input,.settings-modal .box select{width:100%;padding:12px;border-radius:5px;border:1px solid #444;background:#252525;color:#fff;font-size:15px;margin-bottom:8px}
 .settings-modal .box .btn-save{background:#e50914;color:#fff;padding:12px;border:none;border-radius:5px;font-weight:700;width:100%;margin-top:10px;cursor:pointer}
@@ -95,12 +99,14 @@ body{background:#0a0a0a;color:#fff;font-family:'Segoe UI',Arial,sans-serif;min-h
  .hero .overlay{padding:20px}
  .hero .overlay h1{font-size:28px}
  .hero .overlay p{-webkit-line-clamp:3}
- .card{flex:0 0 140px}
+ .card{flex:0 0 150px}
+ .row-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
  .modal .box .media{height:250px}
  .modal .box .content{padding:15px}
  .modal .box .content h2{font-size:24px}
- .row-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+ .modal .box .content .similar .row .card{flex:0 0 100px}
  .section .head .search-input{max-width:100%}
+ .modal .box .content .action-buttons .btn-action{flex:1;text-align:center;padding:10px 16px}
 }
 </style>
 </head>
@@ -211,7 +217,11 @@ body{background:#0a0a0a;color:#fff;font-family:'Segoe UI',Arial,sans-serif;min-h
                 <select id="seasonSelect"></select>
                 <select id="episodeSelect"></select>
             </div>
-            <button class="btn-watch" id="watchBtn">▶ Watch Now</button>
+            <div class="action-buttons">
+                <button class="btn-watch" id="watchBtn">▶ Watch Now</button>
+                <button class="btn-action" id="downloadBtn">⬇ Download</button>
+                <button class="btn-action" id="shareBtn">📤 Share</button>
+            </div>
             <div class="similar">
                 <h3>🎯 More Like This</h3>
                 <div class="row" id="similarRow"></div>
@@ -275,7 +285,7 @@ let currentTheme = localStorage.getItem('myflixTheme') || 'dark';
 let myList = JSON.parse(localStorage.getItem('myflixList') || '[]');
 let history = JSON.parse(localStorage.getItem('myflixHistory') || '[]');
 let progress = JSON.parse(localStorage.getItem('myflixProgress') || '{}');
-let allSearchResults = []; // for search tab filtering
+let allSearchResults = [];
 
 // DOM refs
 const errorDisplay = document.getElementById('errorDisplay');
@@ -302,6 +312,8 @@ const loadingSpinner = document.getElementById('loadingSpinner');
 const searchInput = document.getElementById('searchInput');
 const modalPoster = document.getElementById('modalPoster');
 const modalTrailer = document.getElementById('modalTrailer');
+const downloadBtn = document.getElementById('downloadBtn');
+const shareBtn = document.getElementById('shareBtn');
 
 // ============================================================
 // THEME
@@ -344,7 +356,7 @@ function getYear(item, type) { const d = type === 'tv' ? item.first_air_date : i
 function escapeHTML(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
 
 // ============================================================
-// CARD CREATOR (with grid option)
+// CARD CREATOR
 // ============================================================
 function createCard(item, type, small = false, grid = false) {
     if (!item || !item.id || !item.poster_path) return null;
@@ -357,7 +369,7 @@ function createCard(item, type, small = false, grid = false) {
     const inMyList = myList.some(i => i.id === item.id && i.type === type);
     const card = document.createElement('div');
     card.className = 'card';
-    if (grid) card.style.width = '100%';
+    if (grid) { card.style.flex = 'none'; card.style.width = '100%'; }
     card.innerHTML = `
         <img class="poster" src="${POSTER + item.poster_path}" alt="${escapeHTML(title)}" loading="lazy">
         <div class="badge">${type === 'tv' ? 'TV' : 'MOVIE'}</div>
@@ -490,7 +502,6 @@ async function loadSearchTab(query = '') {
             const data = await api('/search/multi?language=en-US&include_adult=false&page=1&query=' + encodeURIComponent(query));
             items = (data.results||[]).filter(i => (i.media_type==='movie'||i.media_type==='tv') && i.poster_path);
         } else {
-            // Load popular movies and shows for initial view
             const [movies, shows] = await Promise.all([
                 api('/movie/popular?language=en-US&page=1'),
                 api('/tv/popular?language=en-US&page=1')
@@ -549,17 +560,14 @@ function loadTab(tab) {
     } else if (tab === 'search') {
         sections.forEach(id => document.getElementById(id).style.display = 'none');
         document.getElementById('searchSection').style.display = '';
-        // Load search tab with current query if any
         const q = searchInput.value.trim();
         loadSearchTab(q);
-        // Also set the section input to match
         searchSectionInput.value = q;
     } else if (tab === 'settings') {
         openSettings();
     }
 }
 
-// Nav clicks
 document.querySelectorAll('.nav-links span').forEach(el => {
     el.addEventListener('click', function() {
         const tab = this.dataset.tab;
@@ -570,45 +578,32 @@ document.querySelectorAll('.nav-links span').forEach(el => {
 });
 
 // ============================================================
-// SEARCH SECTION INPUT (filter within search tab)
+// SEARCH SECTION INPUT
 // ============================================================
 searchSectionInput.addEventListener('input', function() {
     const query = this.value.trim();
-    // Update the main search input too for sync
     searchInput.value = query;
-    if (query) {
-        loadSearchTab(query);
-    } else {
-        loadSearchTab(); // load default popular
-    }
+    if (query) loadSearchTab(query);
+    else loadSearchTab();
 });
 
 // ============================================================
-// GLOBAL SEARCH INPUT (top bar)
+// GLOBAL SEARCH INPUT
 // ============================================================
 searchInput.addEventListener('input', function() {
     clearTimeout(searchTimeout);
     const q = this.value.trim();
-    // Sync with section input
     searchSectionInput.value = q;
     if (!q) {
-        // If on search tab, show default; else just reset
-        if (currentTab === 'search') {
-            loadSearchTab();
-        }
+        if (currentTab === 'search') loadSearchTab();
         return;
     }
     searchTimeout = setTimeout(() => {
-        // If not on search tab, switch to it
-        if (currentTab !== 'search') {
-            loadTab('search');
-        } else {
-            loadSearchTab(q);
-        }
+        if (currentTab !== 'search') loadTab('search');
+        else loadSearchTab(q);
     }, 400);
 });
 
-// Also handle Enter key on main search to immediately go to search tab
 searchInput.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && this.value.trim()) {
         if (currentTab !== 'search') loadTab('search');
@@ -676,6 +671,49 @@ function closeDetail() {
     selectedItem = null;
     document.body.style.overflow = '';
 }
+
+// ============================================================
+// DOWNLOAD & SHARE
+// ============================================================
+function getPlayerUrl(item) {
+    let url;
+    if (item.media_type === 'tv') {
+        url = PLAYER_TV + encodeURIComponent(item.id) + '/' + encodeURIComponent(selectedSeason||1) + '/' + encodeURIComponent(selectedEpisode||1) + PLAYER_PARAMS;
+    } else {
+        url = PLAYER_MOVIE + encodeURIComponent(item.id) + PLAYER_PARAMS;
+    }
+    return url;
+}
+
+downloadBtn.addEventListener('click', function() {
+    if (!selectedItem) return;
+    const url = getPlayerUrl(selectedItem);
+    // Open in new tab (most browsers will download if the server sends proper headers)
+    window.open(url, '_blank');
+});
+
+shareBtn.addEventListener('click', function() {
+    if (!selectedItem) return;
+    const title = getTitle(selectedItem, selectedItem.media_type);
+    const url = getPlayerUrl(selectedItem);
+    const shareData = {
+        title: title,
+        text: `Check out "${title}" on MYFLIX`,
+        url: url
+    };
+    if (navigator.share) {
+        navigator.share(shareData).catch(()=>{});
+    } else {
+        // Fallback: copy to clipboard
+        const text = `${title}\n${url}`;
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Link copied to clipboard!');
+        }).catch(() => {
+            // Last resort prompt
+            prompt('Copy this link:', text);
+        });
+    }
+});
 
 // ============================================================
 // TV CONTROLS
