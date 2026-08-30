@@ -1,8 +1,8 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><style>*{box-sizing:border-box}</style></head><body><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#050505">
 
 <title>MYFLIX</title>
@@ -22,6 +22,7 @@ body {
     color: white;
     font-family: Arial, Helvetica, sans-serif;
     overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
 }
 
 button,
@@ -32,6 +33,7 @@ select {
 
 button {
     cursor: pointer;
+    touch-action: manipulation;
 }
 
 img {
@@ -90,6 +92,7 @@ img {
     font-weight: 950;
     letter-spacing: -2px;
     cursor: pointer;
+    touch-action: manipulation;
 }
 
 .nav-links {
@@ -102,6 +105,7 @@ img {
 
 .nav-links span {
     cursor: pointer;
+    touch-action: manipulation;
 }
 
 .nav-links span:hover {
@@ -126,6 +130,9 @@ img {
     left: 10px;
     z-index: 2;
     cursor: pointer;
+    touch-action: manipulation;
+    font-size: 20px;
+    padding: 4px;
 }
 
 .search {
@@ -143,6 +150,7 @@ img {
     padding: 9px 10px 9px 34px;
 
     transition: .3s ease;
+    font-size: 16px; /* prevents zoom on iOS */
 }
 
 .search-wrap.active .search {
@@ -168,6 +176,7 @@ img {
     );
 
     font-weight: 900;
+    font-size: 14px;
 }
 
 
@@ -316,7 +325,7 @@ img {
     border-radius: 5px;
 
     padding: 13px 24px;
-
+    min-height: 48px; /* touch friendly */
     font-weight: 900;
 
     transition:
@@ -381,6 +390,8 @@ img {
     padding: 15px 5px 25px;
 
     scrollbar-width: none;
+
+    -webkit-overflow-scrolling: touch;
 }
 
 .movie-row::-webkit-scrollbar {
@@ -409,6 +420,8 @@ img {
     transition:
         transform .3s ease,
         box-shadow .3s ease;
+
+    touch-action: manipulation;
 }
 
 .movie-card:hover {
@@ -547,6 +560,8 @@ img {
     overflow-y: auto;
 
     background: #050505;
+
+    -webkit-overflow-scrolling: touch;
 }
 
 .search-screen.active {
@@ -625,6 +640,8 @@ img {
         translateY(20px);
 
     transition: .3s ease;
+
+    -webkit-overflow-scrolling: touch;
 }
 
 .modal.active .modal-box {
@@ -700,8 +717,8 @@ img {
 
     z-index: 100;
 
-    width: 43px;
-    height: 43px;
+    width: 48px;  /* touch friendly */
+    height: 48px;
 
     border: 0;
 
@@ -711,7 +728,9 @@ img {
 
     background: rgba(0,0,0,.8);
 
-    font-size: 26px;
+    font-size: 28px;
+
+    touch-action: manipulation;
 }
 
 .modal-content {
@@ -793,9 +812,12 @@ img {
 
     border-radius: 5px;
 
-    padding: 10px 14px;
+    padding: 12px 14px; /* touch friendly */
+    min-height: 48px;
 
     outline: none;
+
+    font-size: 16px;
 }
 
 
@@ -833,8 +855,8 @@ img {
 
     z-index: 5001;
 
-    width: 45px;
-    height: 45px;
+    width: 48px;
+    height: 48px;
 
     border: 0;
 
@@ -844,7 +866,9 @@ img {
 
     background: rgba(20,20,20,.9);
 
-    font-size: 26px;
+    font-size: 28px;
+
+    touch-action: manipulation;
 }
 
 
@@ -981,6 +1005,61 @@ img {
 
     .more-like-this .movie-card {
         flex: 0 0 100px;
+    }
+
+    .btn {
+        padding: 12px 18px;
+        min-height: 48px;
+        font-size: 15px;
+    }
+
+    .select {
+        min-height: 44px;
+        padding: 10px 12px;
+    }
+
+    .modal-close,
+    .player-close {
+        width: 44px;
+        height: 44px;
+        font-size: 26px;
+        top: 12px;
+        right: 12px;
+    }
+
+    .search-icon {
+        font-size: 18px;
+        padding: 3px;
+    }
+
+    .profile {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
+    }
+
+    .section-title {
+        font-size: 18px;
+    }
+}
+
+/* Extra small devices */
+@media(max-width:480px) {
+    .movie-card {
+        flex-basis: 120px;
+    }
+
+    .search-wrap.active .search {
+        width: 140px;
+    }
+
+    .hero-title {
+        font-size: 32px;
+    }
+
+    .hero-meta {
+        font-size: 12px;
+        gap: 8px;
     }
 }
 
@@ -4158,4 +4237,4 @@ start();
 </script>
 
 </body>
-</html><script>try{}catch(e){document.body.innerHTML+='<div style="color:red;background:#ffe6e6;padding:10px;margin-top:20px;border-radius:4px;border:1px solid red;"><strong>Runtime Error:</strong> '+e.message+'</div>'}</script></body></html>
+</html>
